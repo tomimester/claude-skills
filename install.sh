@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # Install Tomi's Claude Code skills into ~/.claude/skills on any machine/server.
+# Private repo → clone over SSH (the machine needs SSH access to your GitHub):
 #
-#   curl -fsSL https://raw.githubusercontent.com/tomimester/claude-skills/main/install.sh | bash
+#   git clone git@github.com:tomimester/claude-skills.git ~/.claude-skills \
+#     && bash ~/.claude-skills/install.sh
 #
-# Re-run anytime to update (it pulls the latest and re-links).
+# Re-run `bash ~/.claude-skills/install.sh` anytime to update (pulls + re-links).
 set -euo pipefail
 
-REPO_URL="${CLAUDE_SKILLS_REPO:-https://github.com/tomimester/claude-skills.git}"
+REPO_URL="${CLAUDE_SKILLS_REPO:-git@github.com:tomimester/claude-skills.git}"
 SRC="${CLAUDE_SKILLS_DIR:-$HOME/.claude-skills}"
 DEST="$HOME/.claude/skills"
 

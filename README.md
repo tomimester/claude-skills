@@ -6,16 +6,28 @@ every project.
 
 ## Install (any machine or server)
 
+This is a **private** repo, so clone it over **SSH** (the machine needs its SSH key
+added to your GitHub account — same access you use to push):
+
 ```bash
-curl -fsSL https://raw.githubusercontent.com/tomimester/claude-skills/main/install.sh | bash
+git clone git@github.com:tomimester/claude-skills.git ~/.claude-skills \
+  && bash ~/.claude-skills/install.sh
 ```
 
-Then **restart Claude Code**. Run the same line anytime to **update** (it pulls the
-latest and re-links).
+Then **restart Claude Code**. To **update** later, on each machine:
+
+```bash
+bash ~/.claude-skills/install.sh        # pulls latest + re-links
+```
 
 The installer clones this repo to `~/.claude-skills` and **symlinks** each skill into
-`~/.claude/skills/`, so updating is just `git pull` (or re-running the line). It never
-overwrites a hand-made skill dir that already exists.
+`~/.claude/skills/`, so updates are just a `git pull` away. It never overwrites a
+hand-made skill dir that already exists.
+
+> New machine/server first needs SSH access to GitHub (add its `~/.ssh/id_ed25519.pub`
+> to GitHub → Settings → SSH keys, or use agent-forwarding). If you'd rather skip
+> per-machine SSH setup, make this repo **public** and use a
+> `curl … raw.githubusercontent … | bash` one-liner instead.
 
 ## Skills included
 
@@ -47,6 +59,5 @@ into `%USERPROFILE%\.claude\skills\<name>\SKILL.md`.
 
 ## Notes
 
-- Skills are plain Markdown — no secrets. Keep this repo **public** so the `curl`
-  install works without auth.
+- Skills are plain Markdown — no secrets.
 - Per-project override: drop a `.claude/skills/<name>/` in a repo to shadow one here.
