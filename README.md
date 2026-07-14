@@ -6,11 +6,17 @@ every project.
 
 ## Install (any machine or server)
 
-This is a **private** repo, so clone it over **SSH** (the machine needs its SSH key
-added to your GitHub account — same access you use to push):
+This repo is **public**, so no SSH key setup is needed — a fresh droplet can install
+in one line:
 
 ```bash
-git clone git@github.com:tomimester/claude-skills.git ~/.claude-skills \
+curl -fsSL https://raw.githubusercontent.com/tomimester/claude-skills/main/install.sh | bash
+```
+
+Or, if you'd rather see what you're running before you run it:
+
+```bash
+git clone https://github.com/tomimester/claude-skills.git ~/.claude-skills \
   && bash ~/.claude-skills/install.sh
 ```
 
@@ -24,10 +30,13 @@ The installer clones this repo to `~/.claude-skills` and **symlinks** each skill
 `~/.claude/skills/`, so updates are just a `git pull` away. It never overwrites a
 hand-made skill dir that already exists.
 
-> New machine/server first needs SSH access to GitHub (add its `~/.ssh/id_ed25519.pub`
-> to GitHub → Settings → SSH keys, or use agent-forwarding). If you'd rather skip
-> per-machine SSH setup, make this repo **public** and use a
-> `curl … raw.githubusercontent … | bash` one-liner instead.
+> Cloning over HTTPS means machines can **pull** but not **push**. That's usually what
+> you want — servers consume skills, they don't author them. On a machine where you
+> *do* want to edit and push, switch the remote to SSH:
+>
+> ```bash
+> git -C ~/.claude-skills remote set-url origin git@github.com:tomimester/claude-skills.git
+> ```
 
 ## Skills included
 
@@ -59,5 +68,5 @@ into `%USERPROFILE%\.claude\skills\<name>\SKILL.md`.
 
 ## Notes
 
-- Skills are plain Markdown — no secrets.
+- Skills are plain Markdown — **no secrets**. The repo is public; treat everything in it as world-readable.
 - Per-project override: drop a `.claude/skills/<name>/` in a repo to shadow one here.
