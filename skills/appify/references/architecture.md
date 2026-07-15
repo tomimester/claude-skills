@@ -71,8 +71,33 @@ Flow (maszoedzes files: `src/app/api/native/handoff/route.ts`,
    → Keychain.
 
 Traps (all hit in production, all solved in the reference code):
+- **The App-Review-killer: WebKit blocks cookie writes for a site with zero
+  prior first-party engagement, unless the navigation to that site was
+  initiated by a real user gesture.** This is NOT about SameSite — it's
+  about *who* started the navigation. A `useEffect`/`location.replace` "auto
+  advance the user straight into Google/Apple sign-in" convenience flow
+  looks perfect in every manual test (your device already has a session,
+  so it never runs the code path a truly fresh device runs) — and then
+  fails 100% of the time for App Review, who always test on a fresh device
+  with no prior app/site history. Symptom: `InvalidCheck: state value
+  could not be parsed` in the Auth.js log, and cookies="-" if you capture
+  the request at the edge (nginx `$http_cookie`). SameSite=None on the
+  state/nonce/pkce/callback-url cookies is necessary (Apple's form_post is
+  cross-site) but NOT sufficient — you can burn hours "fixing" that and
+  still fail. THE fix: never auto-navigate into an OAuth provider from
+  script. Render one real tap target (`<a href="/oauth-start?...">`) and
+  require the user to tap it; a script-initiated top-level navigation still
+  doesn't count as the required gesture. One extra tap on a device's very
+  first login with each provider is the cost; already-engaged devices are
+  unaffected (existing session short-circuits before reaching this code).
+  ALWAYS validate this on a device reset to zero (sign out, clear the site's
+  Safari website data, revoke "Sign in with Apple" for the app under
+  Settings → your name → Sign-In & Security) — that is the only test that
+  reproduces what App Review actually does, and it's cheap to run before
+  ever submitting.
 - **Apple OAuth**: form_post response drops SameSite=Lax cookies → the
-  Auth.js callbackUrl cookie must be SameSite=None.
+  Auth.js callbackUrl (and state/nonce/pkce) cookies must be SameSite=None.
+  Necessary; see above for why it's not sufficient by itself.
 - **Email magic link**: the emailed link opens in PLAIN Safari, not the auth
   session. Two consequences: (a) a silent 307 to a custom scheme shows
   "cannot open page" — the hand-off must render a tap-to-open page

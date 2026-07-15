@@ -39,7 +39,17 @@ asset and verify each gate before moving on.
 2. On-device test the STANDALONE build (not Expo Go): every login provider
    (email magic link ONLY misbehaves in standalone builds), a full core
    flow offline (airplane mode), account deletion.
-3. Fix → push → rebuild until clean. Only then start the listing.
+3. **THE mandatory test, every login provider, before ever submitting**:
+   reset the device to zero and retry. Sign out → Settings → Safari →
+   Advanced → Website Data → delete the site's entry → Settings → [name] →
+   Sign-In & Security → Sign in with Apple → the app → Stop Using Apple ID
+   → relaunch → sign in again. This is the ONLY test that reproduces what
+   an App Review device does (no prior engagement with your site). A test
+   on your own already-signed-in device proves nothing about first-time
+   login — see the WebKit cookie-gesture trap in architecture.md, which
+   passes every normal test and fails 100% of the time for App Review.
+4. Fix → push (server-side auth fixes need no rebuild) → retest step 3
+   until clean. Only then start the listing.
 
 ## C. App Store Connect listing (per-field)
 

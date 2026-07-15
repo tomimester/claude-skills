@@ -72,6 +72,15 @@ Read `references/architecture.md` § Auth. The three flows and their traps:
 - OAuth (Google/Apple): in-app auth session → web login → hand-off route
   307s to the app scheme with the code. Apple's form_post drops SameSite=Lax
   cookies — the OAuth callback cookie needs SameSite=None.
+- **NEVER auto-navigate into the OAuth provider from script** (e.g. a
+  `useEffect` that auto-submits/redirects to "save the user a tap"). WebKit
+  blocks cookie storage for a site with no prior first-party engagement
+  unless the navigation was a real user tap — a script-initiated one doesn't
+  count even though it "looks" top-level. This passes every test on your own
+  device (which already has a session) and fails 100% of the time for App
+  Review (always a fresh device) — it's exactly what got Mászóedzés
+  rejected under guideline 2.1(a) on the first submission. Render one real
+  tap target instead. Full story + fix in `references/architecture.md`.
 - **Email magic link: the link opens OUTSIDE the auth session** (Mail →
   Safari). The deep link back (`scheme://auth?code=…`) is treated by
   expo-router as NAVIGATION — you MUST have an `app/auth.tsx` route that
