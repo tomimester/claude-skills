@@ -44,6 +44,7 @@ hand-made skill dir that already exists.
 | --- | --- |
 | **`/onboard`** | Start of session — read the project's `AGENT_ONBOARDING.md` (+ `CLAUDE.md`/README), get up to speed, continue from "Next steps". |
 | **`/handoff`** | End of session — create/refresh `AGENT_ONBOARDING.md` (what's done, where we are, next steps) so the next agent picks up exactly here; commit & push. |
+| **`/appify`** | Turn an existing web project (webapp or WordPress site) into a native iOS App Store app — RN/Expo + JSON API + auth hand-off + Codemagic→TestFlight + the full submission pipeline, as proven on Mászóedzés. |
 
 ## Add a new skill
 
