@@ -134,3 +134,47 @@ Server module sends email via the project's transactional provider (Brevo:
 verified address, Reply-To = the user). One shared core + a web server
 action + `POST /api/v1/feedback`. Client: right-edge "Visszajelzés" tab.
 Brevo gotcha: the server's IP must be added to Brevo Authorised IPs.
+
+## Ratings & reviews (recommended, not an App Store requirement)
+
+Package: `expo-store-review` (wraps `SKStoreReviewController` /
+iOS-18+ `AppStore.requestReview`). Native module — no-ops in Expo Go, needs a
+real build (TestFlight or a dev client).
+
+```ts
+import * as StoreReview from "expo-store-review";
+
+async function maybeAskForRating() {
+  if (await StoreReview.hasAction()) {
+    await StoreReview.requestReview();
+  }
+}
+```
+
+Call `maybeAskForRating()` from a spot that only executes after a genuinely
+positive moment — e.g. right after the Nth completed unit of the app's core
+loop (Nth finished workout/lesson/order), or right after a "🎉 saved!"
+success screen, gated on some milestone (`count === 3`, not every time) so it
+doesn't nag. NEVER call it on cold start, app open, or in a catch block /
+error path.
+
+**Apple's constraints, not the app's to fight:**
+- The OS — not the app — decides whether the sheet actually renders, capped
+  at **3 times per app per 365 days per user**. `requestReview()` always
+  resolves; it does NOT tell the caller whether anything was shown.
+- Because of that cap, a human manually retriggering the same code path
+  repeatedly on one device/Apple ID will see the sheet fewer and fewer
+  times, then never — that is Apple's throttling working correctly, not an
+  app bug. Don't spend time "debugging" it once it stops appearing.
+
+**What "testing" this actually means** (put it on the test checklist as its
+own line — it's easy to silently skip since nothing else breaks if it's
+wrong): confirm the code path FIRES (log/breakpoint on the call) exactly at
+the intended milestone and does NOT fire on first launch or after an error —
+that's the testable, deterministic part. Whether the system sheet visually
+appeared on a given run is not something to assert on.
+
+**Ongoing, not one-time:** once shipped, monitor and reply to reviews in App
+Store Connect → Ratings and Reviews (especially bug reports) — flag this to
+the project owner as a standing operational task, not something that ends
+at ship.

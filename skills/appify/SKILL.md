@@ -119,6 +119,30 @@ Read `references/appstore-checklist.md`. Build these while CI is being set up:
   set up the renewal script + cron from the reference repo
   (`scripts/renew-apple-secret.sh`).
 
+## Phase 6.5 — Ratings & reviews (recommended, not submission-blocking)
+
+Ratings/reviews influence App Store search ranking and conversion — worth
+building, but it's a growth feature, not an Apple requirement. Don't let it
+block Phase 7; do it whenever the project has an obvious "positive moment" to
+hang it on. Full detail in `references/architecture.md` § Ratings & reviews.
+
+- Use Apple's SYSTEM prompt (`expo-store-review`'s `requestReview()`, which
+  wraps `SKStoreReviewController`), never a custom "Rate us?" dialog that
+  deep-links straight to the App Store as the primary ask.
+- Trigger it after a POSITIVE moment — task completed, a milestone reached
+  (Nth session/lesson/article/purchase), a key feature used successfully.
+  NEVER on first launch, NEVER right after an error, crash, or support flow.
+- The OS decides whether to actually show it (capped at 3x per app per 365
+  days per user) — the app has no signal either way. Don't build UI that
+  assumes it always appears.
+- Hand the owner an explicit ongoing task: monitor and reply to reviews in
+  App Store Connect → Ratings and Reviews. This doesn't end at ship — say so.
+- **Testing this needs its own checklist item, called out separately from
+  the rest of on-device testing** — see `references/appstore-checklist.md`
+  § B, because it doesn't fail the obvious way (the app still opens fine)
+  and the OS-level throttling makes naive "does the popup show" testing
+  misleading after the first couple of tries.
+
 ## Phase 7 — Submission (console work, drive the user step-by-step)
 
 Follow `references/appstore-checklist.md` § Submission exactly — it encodes

@@ -50,6 +50,18 @@ asset and verify each gate before moving on.
    passes every normal test and fails 100% of the time for App Review.
 4. Fix → push (server-side auth fixes need no rebuild) → retest step 3
    until clean. Only then start the listing.
+5. **If a ratings/review prompt was built (see architecture.md § Ratings &
+   reviews), test it as ITS OWN checklist item, separately from the rest —
+   it does not fail the obvious way (the app still opens fine), so it's the
+   one thing that's easy to silently never verify.** It also doesn't test
+   like the rest of the on-device pass: it isn't something you check "does
+   it work" on immediately after install — the whole point is it should NOT
+   fire right after launch. Verify instead: (a) walk to the actual milestone
+   the trigger is gated on (e.g. finish N sessions) and confirm the call
+   fires there (log/breakpoint), not before; (b) confirm it does NOT fire on
+   first app open or right after an induced error; (c) expect the visible
+   system sheet to stop appearing after a few manual retries on the same
+   device/Apple ID — that's Apple's 3x/365-day cap, not a bug, don't chase it.
 
 ## C. App Store Connect listing (per-field)
 
